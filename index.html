@@ -22,7 +22,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--dark-bg);
+            /* 기존 검은 배경 대신 콜로세움 이미지를 배경으로 지정 (반투명 어두운 그라데이션 추가) */
+            background: linear-gradient(rgba(5, 5, 5, 0.6), rgba(5, 5, 5, 0.85)), url('./colosseum.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* 스크롤해도 배경 고정 */
             color: #ffffff;
             line-height: 1.6;
             overflow-x: hidden;
@@ -37,6 +41,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
+            display: none;
         }
 
         /* Navigation */
