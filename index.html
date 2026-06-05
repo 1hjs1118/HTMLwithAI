@@ -329,26 +329,32 @@
         </div>
     </section>
 
-    <section id="apply">
-        <div class="glass-container">
-            <h2 style="font-size: 2rem; margin-bottom: 30px; color: var(--primary-gold);">연수 신청하기</h2>
-            <form id="applyForm">
-                <div class="form-group">
-                    <label>성명</label>
-                    <input type="text" placeholder="홍길동" required>
-                </div>
-                <div class="form-group">
-                    <label>연락처</label>
-                    <input type="tel" placeholder="010-0000-0000" required>
-                </div>
-                <div class="form-group">
-                    <label>소속 부서</label>
-                    <input type="text" placeholder="제주특별자치도 XX과" required>
-                </div>
-                <button type="submit" class="submit-btn">국외연수 참가 신청</button>
-            </form>
-        </div>
-    </section>
+<section id="apply">
+    <div class="glass-container">
+        <h2 style="font-size: 2rem; margin-bottom: 30px; color: var(--primary-gold);">연수 신청하기</h2>
+        
+        <!-- 변경 포인트 1: action(주소)과 method(전송방식) 속성을 추가했습니다 -->
+        <form id="applyForm" action="https://script.google.com/macros/s/AKfycbzPn2wh-mXGitY7UN89dEPbfz3Wdl5e7q2_vzFjrPNgEC73t0LL4xdpJEiz_tjgjQzF/exec" method="POST">
+            
+            <div class="form-group">
+                <label>성명</label>
+                <!-- 변경 포인트 2: name="name"을 추가했습니다 -->
+                <input type="text" name="name" placeholder="홍길동" required>
+            </div>
+            <div class="form-group">
+                <label>연락처</label>
+                <!-- 변경 포인트 3: name="phone"을 추가했습니다 -->
+                <input type="tel" name="phone" placeholder="010-0000-0000" required>
+            </div>
+            <div class="form-group">
+                <label>소속 부서</label>
+                <!-- 변경 포인트 4: name="division"를 추가했습니다 -->
+                <input type="text" name="division" placeholder="제주특별자치도 XX과" required>
+            </div>
+            <button type="submit" class="submit-btn">국외연수 참가 신청</button>
+        </form>
+    </div>
+</section>
 
     <script>
         /**
