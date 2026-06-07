@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -333,28 +332,207 @@
     <div class="glass-container">
         <h2 style="font-size: 2rem; margin-bottom: 30px; color: var(--primary-gold);">연수 신청하기</h2>
         
-        <!-- 변경 포인트 1: action(주소)과 method(전송방식) 속성을 추가했습니다 -->
-        <form id="applyForm" action="https://script.google.com/macros/s/AKfycbzPn2wh-mXGitY7UN89dEPbfz3Wdl5e7q2_vzFjrPNgEC73t0LL4xdpJEiz_tjgjQzF/exec" method="POST">
-            
+        <form id="applyForm">
             <div class="form-group">
                 <label>성명</label>
-                <!-- 변경 포인트 2: name="name"을 추가했습니다 -->
                 <input type="text" name="name" placeholder="홍길동" required>
             </div>
             <div class="form-group">
                 <label>연락처</label>
-                <!-- 변경 포인트 3: name="phone"을 추가했습니다 -->
                 <input type="tel" name="phone" placeholder="010-0000-0000" required>
             </div>
             <div class="form-group">
                 <label>소속 부서</label>
-                <!-- 변경 포인트 4: name="division"를 추가했습니다 -->
                 <input type="text" name="division" placeholder="제주특별자치도 XX과" required>
             </div>
-            <button type="submit" class="submit-btn">국외연수 참가 신청</button>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">국외연수 참가 신청</button>
+            
+            <!-- 성공 메시지 영역 -->
+            <div id="successMessage" style="display: none; margin-top: 20px; padding: 18px; background: rgba(0, 230, 118, 0.15); border: 1px solid #00e676; border-radius: 12px; color: #00e676; text-align: center; font-weight: 500;">
+                ✅ 신청 정보가 구글 시트로 정상 전송되었습니다.<br>
+                <small style="opacity: 0.8;">곧 연수팀에서 연락드리겠습니다. 감사합니다!</small>
+            </div>
+            
+            <!-- 에러 메시지 영역 -->
+            <div id="errorMessage" style="display: none; margin-top: 20px; padding: 18px; background: rgba(255, 77, 77, 0.15); border: 1px solid #ff4d4d; border-radius: 12px; color: #ff4d4d; text-align: center;">
+                ❌ 전송 중 오류가 발생했습니다. 다시 시도해주세요.
+            </div>
         </form>
     </div>
 </section>
+       
+
+<!-- Chatbot UI -->
+<div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 2000; font-family: 'Noto Sans KR', sans-serif;">
+    <!-- Floating Button -->
+    <button id="chat-toggle" 
+            style="background: var(--primary-gold); color: #000; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 28px; cursor: pointer; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); transition: all 0.3s;">
+        🤖
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chat-window" style="display: none; position: absolute; bottom: 80px; right: 0; width: 380px; height: 520px; background: rgba(5,5,5,0.95); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); flex-direction: column;">
         
+        <!-- Header -->
+        <div style="padding: 15px; background: rgba(0,0,0,0.7); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 10px;">
+            <div style="width: 32px; height: 32px; background: var(--primary-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold;">G</div>
+            <div>
+                <strong>Grok Assistant</strong><br>
+                <small style="opacity: 0.7;">Powered by xAI • Ask about the program</small>
+            </div>
+            <button id="chat-close" style="margin-left: auto; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">✕</button>
+        </div>
+
+        <!-- Messages -->
+        <div id="chat-messages" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: var(--dark-bg);">
+            <!-- Messages added by JS -->
+        </div>
+
+        <!-- Input -->
+        <div style="padding: 15px; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.7);">
+            <div style="display: flex; gap: 8px;">
+                <input id="chat-input" type="text" placeholder="연수에 대해 물어보세요..." 
+                       style="flex: 1; padding: 14px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: #fff;">
+                <button id="chat-send" 
+                        style="background: var(--primary-gold); color: #000; border: none; padding: 0 24px; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                    Send
+                </button>
+            </div>
+            <small style="display: block; text-align: center; margin-top: 8px; opacity: 0.6; font-size: 0.75rem;">
+                xAI API 통해 답변 중입니다. 토큰 소진 시 추가답변 생성이 불가능합니다.
+            </small>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// === Google Sheets Submit with AJAX ===
+document.getElementById('applyForm').addEventListener('submit', async function(e) {
+    e.preventDefault();  // 페이지 이동 방지
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('successMessage');
+    const errorMsg = document.getElementById('errorMessage');
+    
+    // 버튼 로딩 상태
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "전송 중...";
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzPn2wh-mXGitY7UN89dEPbfz3Wdl5e7q2_vzFjrPNgEC73t0LL4xdpJEiz_tjgjQzF/exec', {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors'   // Google Apps Script는 no-cors 필요
+        });
+
+        // 성공 처리
+        successMsg.style.display = 'block';
+        this.reset();  // 폼 초기화
+        
+    } catch (err) {
+        console.error(err);
+        errorMsg.style.display = 'block';
+    } finally {
+        // 버튼 원상 복구
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    }
+});
+
+// === NEW CHATBOT SCRIPT ===
+const API_KEY = "xai-WTaddcbCRLt7Mc83VlildkPXgxUReBLyB33QqyTea6HgpP84ZVCSWESH6hHXXnsoZHI7inPOw0IwAxvh";  // ← Replace this!
+const API_URL = "https://api.x.ai/v1/chat/completions";
+
+const chatToggle = document.getElementById('chat-toggle');
+const chatWindow = document.getElementById('chat-window');
+const chatClose = document.getElementById('chat-close');
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+
+let conversationHistory = [
+    { role: "system", content: "You are a helpful assistant for the Jeju Core Talent Overseas Training Program to Italy & Germany. Answer in Korean politely and enthusiastically." }
+];
+
+function addMessage(role, content) {
+    const msgDiv = document.createElement('div');
+    msgDiv.style.padding = "12px 16px";
+    msgDiv.style.borderRadius = "12px";
+    msgDiv.style.maxWidth = "85%";
+    msgDiv.style.alignSelf = role === "user" ? "flex-end" : "flex-start";
+    msgDiv.style.background = role === "user" ? "var(--primary-gold)" : "rgba(255,255,255,0.1)";
+    msgDiv.style.color = role === "user" ? "#000" : "#fff";
+    msgDiv.textContent = content;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatToggle.addEventListener('click', () => {
+    chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+    if (chatMessages.children.length === 0) {
+        addMessage("assistant", "안녕하세요! 제주 핵심인재 국외연수에 대해 무엇이든 물어보세요 😊");
+    }
+});
+
+chatClose.addEventListener('click', () => {
+    chatWindow.style.display = 'none';
+});
+
+async function sendMessage() {
+    const userText = chatInput.value.trim();
+    if (!userText) {
+        return;
+    }
+    
+    if (!API_KEY || API_KEY.includes("YOUR_XAI_API_KEY_HERE") || API_KEY.length < 20) {
+        alert("API 키가 제대로 설정되지 않았습니다. 코드를 다시 확인해주세요!");
+       
+        return;
+    }
+
+    addMessage("user", userText);
+    chatInput.value = "";
+
+    conversationHistory.push({ role: "user", content: userText });
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "grok-4.3",   // or grok-3 if preferred
+                messages: conversationHistory,
+                temperature: 0.7,
+                max_tokens: 800
+            })
+        });
+
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't process that.";
+
+        addMessage("assistant", reply);
+        conversationHistory.push({ role: "assistant", content: reply });
+    } catch (err) {
+        addMessage("assistant", "⚠️ 연결 오류가 발생했습니다. API 키를 확인해주세요.");
+        console.error(err);
+    }
+}
+
+chatSend.addEventListener('click', sendMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+</script>
+
 </body>
 </html>
