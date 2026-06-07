@@ -44,7 +44,18 @@
         }
         nav ul li a:hover { color: var(--primary-gold); transform: translateY(-2px); }
 
-        section { padding: 140px 20px; max-width: 1200px; margin: 0 auto; }
+        section {
+            padding: 140px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1.1s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
         .glass-container {
             background: var(--glass-bg);
             backdrop-filter: blur(25px);
@@ -55,8 +66,15 @@
         }
 
         /* Hero - 크게 업그레이드 */
+        @keyframes heroFadeIn {
+            from { opacity: 0; transform: translateY(80px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
         .hero {
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            opacity: 1;
+            transform: none;
+            animation: heroFadeIn 1.1s cubic-bezier(0.25, 0.1, 0.25, 1) both;
         }
         .hero h1 {
             font-family: 'Playfair Display', serif;
@@ -74,10 +92,6 @@
             cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .btn:hover { transform: translateY(-6px) scale(1.05); box-shadow: 0 20px 40px rgba(232, 198, 112, 0.4); }
-
-        /* Scroll Animation */
-        .fade-in { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
-        .fade-in.visible { opacity: 1; transform: translateY(0); }
 
         /* Timeline 업그레이드 */
         .timeline { border-left: 3px solid var(--deep-gold); padding-left: 50px; }
@@ -99,7 +113,7 @@
 
 .map-container iframe {
     width: 100% !important;
-    height: 720px !important;    /* 필요에 따라 조정 */
+    height: 520px !important;    /* 필요에 따라 조정 */
     border: none;
 }
 
@@ -129,7 +143,7 @@
 </nav>
 
 <!-- Hero -->
-<section class="hero fade-in">
+<section class="hero">
     <h1>제주 핵심인재<br>국외연수</h1>
     <p>이탈리아와 독일, 역사와 자연이 만나는 특별한 여정</p>
     <a href="#apply" class="btn">지금 신청하기</a>
@@ -461,16 +475,18 @@ chatInput.addEventListener('keypress', (e) => {
 });
 </script>
 <script>
-// Intersection Observer로 스크롤 애니메이션
+// 스크롤 떠오르는 애니메이션
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
     });
-}, { threshold: 0.1 });
+}, { threshold: 0.12 });
 
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-// Three.js 개선 (더 부드럽고 고급스럽게) - 기존 코드에 추가 가능
+document.querySelectorAll('section:not(.hero)').forEach(section => {
+    observer.observe(section);
+});
 </script>
 </body>
 </html>
