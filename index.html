@@ -446,9 +446,8 @@ document.getElementById('applyForm').addEventListener('submit', async function(e
     }
 });
 
-// === NEW CHATBOT SCRIPT ===
-const API_KEY = "xai-WTaddcbCRLt7Mc83VlildkPXgxUReBLyB33QqyTea6HgpP84ZVCSWESH6hHXXnsoZHI7inPOw0IwAxvh";  // ← Replace this!
-const API_URL = "https://api.x.ai/v1/chat/completions";
+    // === Cloudflare Worker로 연결된 Grok Chatbot ===
+const WORKER_URL = "https://jejuchatbot2.hjs1118.workers.dev/";   // ← 너의 Worker 주소
 
 const chatToggle = document.getElementById('chat-toggle');
 const chatWindow = document.getElementById('chat-window');
@@ -487,15 +486,7 @@ chatClose.addEventListener('click', () => {
 
 async function sendMessage() {
     const userText = chatInput.value.trim();
-    if (!userText) {
-        return;
-    }
-    
-    if (!API_KEY || API_KEY.includes("YOUR_XAI_API_KEY_HERE") || API_KEY.length < 20) {
-        alert("API 키가 제대로 설정되지 않았습니다. 코드를 다시 확인해주세요!");
-       
-        return;
-    }
+    if (!userText) return;
 
     addMessage("user", userText);
     chatInput.value = "";
@@ -503,28 +494,26 @@ async function sendMessage() {
     conversationHistory.push({ role: "user", content: userText });
 
     try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(WORKER_URL, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "grok-4.3",   // or grok-3 if preferred
-                messages: conversationHistory,
-                temperature: 0.7,
-                max_tokens: 800
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: conversationHistory })
         });
 
         const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't process that.";
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        const reply = data.choices?.[0]?.message?.content || "죄송해요, 답변을 생성하지 못했어요.";
 
         addMessage("assistant", reply);
         conversationHistory.push({ role: "assistant", content: reply });
+
     } catch (err) {
-        addMessage("assistant", "⚠️ 연결 오류가 발생했습니다. API 키를 확인해주세요.");
         console.error(err);
+        addMessage("assistant", "⚠️ 연결 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
 }
 
