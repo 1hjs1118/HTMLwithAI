@@ -4,201 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, initial-scale=0.45">
     <title>제주 핵심인재 국외연수: 이탈리아 & 독일</title>
-    <!-- Google Fonts: Noto Sans KR -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
-    <!-- Three.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    
     <style>
         :root {
-            --primary-gold: #d4af37;
-            --accent-red: #ff4d4d;
-            --support-green: #00e676;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --dark-bg: #050505;
+            --primary-gold: #e8c670;
+            --deep-gold: #c9a04c;
+            --dark: #0a0a0a;
+            --glass-bg: rgba(15, 15, 20, 0.75);
+            --glass-border: rgba(232, 198, 112, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            /* 기존 검은 배경 대신 콜로세움 이미지를 배경으로 지정 (반투명 어두운 그라데이션 추가) */
-            background: linear-gradient(rgba(5, 5, 5, 0.6), rgba(5, 5, 5, 0.85)), url('./colosseum.jpg');
+            background: linear-gradient(rgba(10,10,10,0.75), rgba(10,10,10,0.9)), url('./colosseum.jpg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* 스크롤해도 배경 고정 */
-            color: #ffffff;
-            line-height: 1.6;
+            background-attachment: fixed;
+            color: #f0f0f0;
+            line-height: 1.7;
             overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
-        /* Background 3D Canvas */
-        #hero-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            display: none;
-        }
+        #hero-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.85; }
 
-        /* Navigation */
         nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(15px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--glass-border);
+            position: fixed; top: 0; width: 100%; background: rgba(10,10,10,0.85);
+            backdrop-filter: blur(20px); z-index: 1000; border-bottom: 1px solid var(--glass-border);
         }
-        nav ul {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            padding: 1.2rem 0;
-        }
-        nav ul li { margin: 0 25px; }
+        nav ul { display: flex; justify-content: center; flex-wrap: wrap; padding: 1.5rem 0; gap: 2.5rem; list-style: none; }
         nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #fff; text-decoration: none; font-weight: 500; letter-spacing: 1.5px;
+            transition: all 0.4s ease;
         }
-        nav ul li a:hover { color: var(--primary-gold); }
+        nav ul li a:hover { color: var(--primary-gold); transform: translateY(-2px); }
 
-        /* Main Content Layout */
-        section {
-            padding: 120px 20px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+        section { padding: 140px 20px; max-width: 1200px; margin: 0 auto; }
         .glass-container {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 50px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            margin-bottom: 50px;
+            border-radius: 28px;
+            padding: 60px 55px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.6);
         }
 
-        /* Hero Section */
+        /* Hero - 크게 업그레이드 */
         .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
         .hero h1 {
-            font-size: 4rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #fff, var(--primary-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-family: 'Playfair Display', serif;
+            font-size: 4.8rem; font-weight: 700; line-height: 1.1;
+            background: linear-gradient(90deg, #fff, var(--primary-gold), #fff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
         }
-        .hero p { font-size: 1.4rem; opacity: 0.9; font-weight: 300; }
-        .hero-btn {
-            margin-top: 30px;
-            padding: 15px 40px;
-            background: var(--primary-gold);
-            color: #000;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            transition: all 0.3s ease;
-        }
-        .hero-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); }
+        .hero p { font-size: 1.5rem; opacity: 0.9; margin-bottom: 40px; }
 
-        /* Timeline Section */
-        .timeline { border-left: 2px solid var(--primary-gold); padding-left: 40px; margin-left: 20px; }
-        .timeline-node { position: relative; margin-bottom: 50px; }
+        /* 개선된 버튼 */
+        .btn {
+            padding: 18px 48px; background: var(--primary-gold); color: #000;
+            border: none; border-radius: 50px; font-weight: 700; font-size: 1.15rem;
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn:hover { transform: translateY(-6px) scale(1.05); box-shadow: 0 20px 40px rgba(232, 198, 112, 0.4); }
+
+        /* Scroll Animation */
+        .fade-in { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* Timeline 업그레이드 */
+        .timeline { border-left: 3px solid var(--deep-gold); padding-left: 50px; }
+        .timeline-node { position: relative; margin-bottom: 60px; }
         .timeline-node::before {
-            content: '';
-            position: absolute;
-            left: -49px;
-            top: 5px;
-            width: 16px;
-            height: 16px;
-            background: var(--primary-gold);
-            border-radius: 50%;
-            box-shadow: 0 0 15px var(--primary-gold);
-        }
-        .timeline-date { color: var(--primary-gold); font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 10px; }
-        .timeline-content h3 { font-size: 1.5rem; margin-bottom: 10px; }
-        .timeline-content ul { list-style: none; opacity: 0.85; }
-        .timeline-content ul li { margin-bottom: 5px; }
-        strong { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.3); }
-
-        /* Budget Table */
-        .budget-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        .budget-table th, .budget-table td { padding: 18px; text-align: left; border-bottom: 1px solid var(--glass-border); }
-        .budget-table th { background: rgba(255, 255, 255, 0.05); color: var(--primary-gold); font-size: 1rem; }
-        .highlight-row { background: rgba(255, 77, 77, 0.1); }
-        .self-pay { color: var(--accent-red); font-weight: 700; font-size: 1.2rem; }
-        .support-pay { color: var(--support-green); font-weight: 700; }
-
-        /* Application Form */
-        .form-group { margin-bottom: 25px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
-        input {
-            width: 100%;
-            padding: 16px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        input:focus { outline: none; border-color: var(--primary-gold); }
-        .submit-btn {
-            width: 100%;
-            padding: 20px;
-            background: var(--primary-gold);
-            border: none;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .submit-btn:hover { transform: scale(1.02); }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .glass-container { padding: 30px 20px; }
-            nav ul li { margin: 0 10px; font-size: 0.8rem; }
-            .budget-table { font-size: 0.85rem; }
+            content: ''; position: absolute; left: -21px; top: 8px;
+            width: 18px; height: 18px; background: var(--primary-gold);
+            border-radius: 50%; box-shadow: 0 0 20px var(--primary-gold);
         }
     </style>
 </head>
 <body>
 
-    <canvas id="hero-canvas"></canvas>
+<canvas id="hero-canvas"></canvas>
 
-    <nav>
-        <ul>
+<nav> 
+ <ul>
             <li><a href="#intro">연수 소개</a></li>
             <li><a href="#itinerary">상세 일정</a></li>
             <li><a href="#budget">예산 내역</a></li>
             <li><a href="#apply">신청하기</a></li>
         </ul>
-    </nav>
+</nav>
 
-    <section class="hero">
-        <h1>제주특별자치도 핵심인재 국외연수</h1>
-        <p>이탈리아 & 독일 | 2026. 06. 11. (목)— 06. 20. (토)</p>
-        <a href="#apply" class="hero-btn">지금 신청하기</a>
-    </section>
+<!-- Hero -->
+<section class="hero fade-in">
+    <h1>제주 핵심인재<br>국외연수</h1>
+    <p>이탈리아와 독일, 역사와 자연이 만나는 특별한 여정</p>
+    <a href="#apply" class="btn">지금 신청하기</a>
+</section>
 
     <section id="intro">
         <div class="glass-container">
@@ -453,7 +362,6 @@ document.getElementById('applyForm').addEventListener('submit', async function(e
 
     
 
-
     // === Cloudflare Worker로 연결된 Grok Chatbot ===
 const WORKER_URL = "https://jejuchatbot2.hjs1118.workers.dev/";   // ← 너의 Worker 주소
 
@@ -531,6 +439,16 @@ chatInput.addEventListener('keypress', (e) => {
 });
 </script>
 <script>
+// Intersection Observer로 스크롤 애니메이션
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1 });
 
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Three.js 개선 (더 부드럽고 고급스럽게) - 기존 코드에 추가 가능
+</script>
 </body>
 </html>
