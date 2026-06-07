@@ -530,6 +530,17 @@ chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
 });
 </script>
+<script>
+// Intersection Observer로 스크롤 애니메이션
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1 });
 
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Three.js 개선 (더 부드럽고 고급스럽게) - 기존 코드에 추가 가능
+</script>
 </body>
 </html>
