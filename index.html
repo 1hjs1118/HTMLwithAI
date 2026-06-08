@@ -363,7 +363,6 @@
         
 <!-- 신청자 수 표시 영역 -->
 <div class="applicant-status">
-  <p>현재 <strong id="applicant-count">0</strong>명이 신청했습니다</p>
 </div>
         
         <form id="applyForm">
@@ -473,7 +472,6 @@ document.getElementById('applyForm').addEventListener('submit', async function(e
         if (result.status === "success") {
             successMsg.style.display = 'block';
             this.reset();  // 폼 초기화
-            await updateApplicantCount();
         } else {
             throw new Error(result.message || "전송 실패");
         }
@@ -489,7 +487,7 @@ document.getElementById('applyForm').addEventListener('submit', async function(e
     
 
     // === Cloudflare Worker로 연결된 Grok Chatbot ===
-const CHATBOT_WORKER_URL = "https://jejuchatbot2.hjs1118.workers.dev/";   // ← 너의 Worker 주소
+const WORKER_URL = "https://jejuchatbot2.hjs1118.workers.dev/";   // ← 너의 Worker 주소
 
 const chatToggle = document.getElementById('chat-toggle');
 const chatWindow = document.getElementById('chat-window');
@@ -536,7 +534,7 @@ async function sendMessage() {
     conversationHistory.push({ role: "user", content: userText });
 
     try {
-        const res = await fetch(CHATBOT_WORKER_URL, {
+        const res = await fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ messages: conversationHistory })
@@ -569,12 +567,12 @@ chatInput.addEventListener('keypress', (e) => {
     
     <script>
 // Worker 주소
-const APPLY_WORKER_URL = "https://application.hjs1118.workers.dev/";
+const WORKER_URL = "https://application.hjs1118.workers.dev/";
 
 // 신청자 수 조회
 async function updateApplicantCount() {
   try {
-    const res = await fetch(`${APPLY_WORKER_URL}/stats/applicants`);
+    const res = await fetch(`${WORKER_URL}/stats/applicants`);
     if (!res.ok) throw new Error("Count fetch failed");
 
     const data = await res.json();
@@ -586,6 +584,57 @@ async function updateApplicantCount() {
     console.error("신청자 수 조회 실패:", err);
   }
 }
+
+// 폼 제출 처리
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('#apply form');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : '';
+
+      try {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = '신청 중...';
+        }
+
+        // ★ Worker 주소로 직접 POST 요청
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          body: new FormData(form)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.status === "success") {
+          alert(result.message || '신청이 완료되었습니다!');
+          
+          // 신청 성공 시 카운트 갱신
+          updateApplicantCount();
+          form.reset();
+        } else {
+          alert(result.message || '신청 중 오류가 발생했습니다.');
+        }
+
+      } catch (error) {
+        console.error(error);
+        alert('네트워크 연결 오류가 발생했습니다.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
+    });
+  }
+
+  // 페이지 로드 시 카운트 조회
+  updateApplicantCount();
+});
 </script>
     
 <script>
