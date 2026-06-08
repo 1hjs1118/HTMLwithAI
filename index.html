@@ -117,6 +117,61 @@
     border: none;
 }
 
+        .notice-box {
+  background: rgba(232, 198, 112, 0.08);
+  border: 1px solid rgba(232, 198, 112, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.notice-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.notice-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #e8c670;
+}
+
+.notice-icon {
+  font-size: 1.3rem;
+}
+
+.notice-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.notice-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: #ddd;
+}
+
+.notice-list li:last-child {
+  border-bottom: none;
+}
+
+.notice-detail {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.92rem;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.notice-footer {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+}
+
 /* 모바일 대응 */
 @media (max-width: 768px) {
     .map-container {
@@ -276,6 +331,35 @@
     <section id="apply">
     <div class="glass-container">
         <h2 style="font-size: 2rem; margin-bottom: 30px; color: var(--primary-gold);">국외연수 신청하기</h2>
+
+        <!-- 신청자 필수 안내 박스 -->
+<div class="notice-box">
+  <div class="notice-header">
+    <span class="notice-icon">📌</span>
+    <h3>신청자 필수 안내사항</h3>
+  </div>
+  <ul class="notice-list">
+    <li>
+      <strong>정산보고서 제출 기한</strong><br>
+      <span class="notice-detail">연수 종료일로부터 <strong>30일 이내</strong> 제출 필수</span>
+    </li>
+    <li>
+      <strong>필수 제출 서류</strong><br>
+      <span class="notice-detail">정산보고서, 영수증 원본, 활동일지, 수료증 등</span>
+    </li>
+    <li>
+      <strong>지원금 정산 기준</strong><br>
+      <span class="notice-detail">실제 사용 영수증 기준으로 정산하며, 미사용 금액은 반납</span>
+    </li>
+    <li>
+      <strong>취소 및 변경</strong><br>
+      <span class="notice-detail">연수 시작 14일 전까지 취소 가능 (이후 취소 시 위약금 발생)</span>
+    </li>
+  </ul>
+  <p class="notice-footer">
+    ※ 위 내용은 요약본이며, 정확한 기준은 <strong>PDF 가이드라인</strong>을 반드시 확인하시기 바랍니다.
+  </p>
+</div>
         
         <form id="applyForm">
             <div class="form-group">
