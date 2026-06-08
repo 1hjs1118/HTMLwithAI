@@ -361,6 +361,11 @@
   </p>
 </div>
         
+<!-- 신청자 수 표시 영역 -->
+<div class="applicant-status">
+  <p>현재 <strong id="applicant-count">0</strong>명이 신청했습니다</p>
+</div>
+        
         <form id="applyForm">
             <div class="form-group">
                 <label>성명</label>
@@ -556,6 +561,69 @@ async function sendMessage() {
 chatSend.addEventListener('click', sendMessage);
 chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
+});
+
+    
+// 신청자 수 조회 및 표시 함수
+async function updateApplicantCount() {
+  try {
+    const res = await fetch('https://your-worker.workers.dev/stats/applicants');
+    const data = await res.json();
+
+    const countEl = document.getElementById('applicant-count');
+    if (countEl && data.count !== undefined) {
+      countEl.textContent = data.count;
+    }
+  } catch (err) {
+    console.error('신청자 수를 불러오는데 실패했습니다.');
+  }
+}
+
+// 폼 제출 성공 후 신청자 수 갱신
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('#apply form'); // 실제 폼 selector 확인 후 수정
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : '';
+
+      try {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = '신청 중...';
+        }
+
+        const response = await fetch(form.action || '#', {
+          method: form.method || 'POST',
+          body: new FormData(form)
+        });
+
+        if (response.ok) {
+          alert('신청이 완료되었습니다!');
+          
+          // ★ 신청 성공 후 신청자 수 즉시 갱신
+          updateApplicantCount();
+          
+          form.reset();
+        } else {
+          alert('신청 중 오류가 발생했습니다.');
+        }
+      } catch (error) {
+        alert('네트워크 오류가 발생했습니다.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
+    });
+  }
+
+  // 페이지 로드 시 최초 1회 신청자 수 조회
+  updateApplicantCount();
 });
 </script>
 <script>
